@@ -6,8 +6,8 @@ fullDataset = imageDatastore(digitDatasetPath, ...
 
 [imdsTrain, imdsVal] = splitEachLabel(fullDataset, 0.8, 'randomize');
 %% Set script parameter
-verbose = true % if true : shows train process
-val_freq = 200 % higher freq qill peed script execution, lower could improve accuracy
+verbose = false; % if true : shows train process
+val_freq = 200; % higher freq qill peed script execution, lower could improve accuracy
 %%
 
 layers = [
