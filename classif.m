@@ -83,10 +83,7 @@ prediction =classify(net, imdsVal);
 yval = imdsVal.Labels;
 
 for i=1:10
-            idx=find(double(yval)==i);
-            pred=prediction(idx);
-            val=yval(idx);
-            acc_per_digit(i)=sum(pred==val)/numel(val);
+    acc_per_digit(i) = acc_per_value(prediction,yval,i);
 end
 
 
@@ -172,3 +169,4 @@ ylabel('time in s');
 title('minibatchsize vs training time');
 
 saveas(gcf,[pwd '/plot/time_mb.png'])
+

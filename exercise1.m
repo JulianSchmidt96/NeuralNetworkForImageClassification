@@ -51,10 +51,6 @@ optimizers = {'adam', 'sgdm'};
 
 results = struct;
 results.learningRatesACC = zeros(length(optimizers), length(learningRates));
-results.learningRatesMSE = zeros(length(optimizers), length(learningRates));
-results.learningRatesRMSE = zeros(length(optimizers), length(learningRates));
-
-
 
 
 %% Testing different optimizers at different learning rates 
@@ -78,8 +74,6 @@ for optim_idx = 1:length(optimizers)
 
             % Save acc and mse in results struct
             results.learningRatesACC(optim_idx,lr_idx) = acc;
-            results.learningRatesMSE(optim_idx,lr_idx) = mse;
-            results.learningRatesRMSE(optim_idx,lr_idx) = rmse;
 
     end
 end
@@ -125,7 +119,7 @@ bestTrainOptions = trainingOptions(bestOptimizer, ...
 
 results.acc_per_digit = zeros(1,10);
 for i=1:10
-    results.acc_per_digit(1,i) = acc_per_value(prediction,yval,i);
+    results.acc_per_digit(1,i) = acc_per_value(prediction,imdsVal.Labels,i);
 end
 
 
@@ -133,8 +127,6 @@ end
 
 results.miniBatchTimes = zeros(1,length(minibatches));
 results.miniBatchACC = zeros(1,length(minibatches));
-results.miniBatchMSE = zeros(1,length(minibatches));
-results.miniBatchRMSE = zeros(1,length(minibatches));
 
 
 for i = 1:length(minibatches)
