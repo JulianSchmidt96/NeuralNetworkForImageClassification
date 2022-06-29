@@ -12,7 +12,7 @@ fullDataset = imageDatastore(digitDatasetPath, ...
 %% Seting parameters for the entire Scipt
 
 verbose = false; % if true : shows train process
-val_freq = 200; % higher freq qill peed script execution, lower could improve accuracy
+val_freq = 200; % higher freq will speed script execution, lower could improve accuracy
 epochs = 8; % number of epochs for training
 
 %% Building a Network Architecture
@@ -70,7 +70,7 @@ for optim_idx = 1:length(optimizers)
             'ValidationFrequency',val_freq, ...
             'Verbose',verbose);
 
-            [net, prediction ,acc ,mse, rmse] = train_and_predict(Layers, trainOptions, imdsTrain, imdsVal);
+            [net, prediction ,acc ] = train_and_predict(Layers, trainOptions, imdsTrain, imdsVal,imdsVal.Labels);
 
             % Save acc and mse in results struct
             results.learningRatesACC(optim_idx,lr_idx) = acc;
@@ -119,7 +119,7 @@ bestTrainOptions = trainingOptions(bestOptimizer, ...
 
 results.acc_per_digit = zeros(1,10);
 for i=1:10
-    results.acc_per_digit(1,i) = acc_per_value(prediction,imdsVal.Labels,i);
+    results.acc_per_digit(1,i) = accPerValue(prediction,imdsVal.Labels,i);
 end
 
 

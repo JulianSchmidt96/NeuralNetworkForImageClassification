@@ -1,5 +1,3 @@
-% Training of neural network for image reconstruction of digits propagated 
-% through multimode fiber
 
 clear all
 close all
@@ -7,7 +5,7 @@ close all
 
 verbose = true; % if true : shows train process
 validationFrequency = 200; % higher freq will speed script execution, lower could improve accuracy
-epochs = 8; % number of epochs for training
+epochs = 80; % number of epochs for training
 miniBatchSize  = 128; % higher size will speed train and val process
 
 
@@ -16,7 +14,12 @@ miniBatchSize  = 128; % higher size will speed train and val process
 dataSet = load("DATA_MMF_16.mat");
 
 
-
+xTrain = dataSet.XTrain;
+yTrain = dataSet.XTrain;
+xVal = dataSet.XValid;
+yVal = dataSet.YValid;
+xTest = dataSet.XTest;
+yTest = dataSet.YTest;
 
 %% Create Neural Network Layergraph MLP
 % Layers = [];
@@ -54,18 +57,29 @@ options = trainingOptions('adam', ...
 
 % Training
 
-[net, trainHistory] = trainNetwork(dataSet.XTrain, dataSet.YTrain, Layers, options);
+[net, trainHistory] = trainNetwork(xTrain, yTrain, Layers, options);
 
 %% Calculate Prediction 
 % use command "predict"
-Prediction = predict(net, dataSet.XTest);
+prediction = predict(net, xTest);
 
 
 %% Evaluate Network
 % calculate RMSE, Correlation, SSIM, PSNR
 
+rmses = zeros(siyze(yTest,4),1);
+    corrCoefs = zeros(siyze(yTest,4),1);
+    ssims = zeros(siyze(yTest,4),1);
+    psnrs = zeros(siyze(yTest,4),1);
+for i=1:size(yTest,4)
+    
+    rmses(i) = calcRmse(yTest, prediction);
+    corrCoefs(i) = calcCorrCoef(yTest, prediction);
+    ssims(i) = ssim(yTest, prediction);
+    psnrs(i) = psnr(yTest, prediction);
+end
 
-% calc RMSE per prediction:
+
 %% Boxplots for step 6 of instructions
 
 %% Step 7: create Neural Network Layergraph U-Net

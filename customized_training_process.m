@@ -1,5 +1,5 @@
 %% Load Training Data & define class catalog & define input image size
-disp('Loading training data...')
+
 % download from MNIST-home page or import dataset from MATLAB
 % https://www.mathworks.com/help/deeplearning/ug/data-sets-for-deep-learning.html
 % http://yann.lecun.com/exdb/mnist/
@@ -15,16 +15,24 @@ disp('Loading training data...')
 
 
 %% define network (dlnet)
-NN_layers = [...
-    ...
+Layers = [
+    imageInputLayer([28 28 1],'Normalization','none','Name','input')
+    
+    fullyConnectedLayer(1000, 'Name','fullyConnected1')
+    reluLayer('Name','relu1')
+    
+    fullyConnectedLayer(10,'Name','fullyConnected2')
+    softmaxLayer('Name','softmax')
+    
+    
    ];
 
 % convert to a layer graph
-lgraph = layerGraph(NN_layers);
+lgraph = layerGraph(Layers);
 % Create a dlnetwork object from the layer graph.
 dlnet = dlnetwork(lgraph);
 % visualize the neural network
-analyzeNetwork(dlnet)
+%analyzeNetwork(dlnet)
 
 %% Specify Training Options (define hyperparameters)
 
@@ -49,23 +57,48 @@ analyzeNetwork(dlnet)
 % averageSqGrad
 
 % "for-loop " for training
-mbq = minibatchqueue(data,...
-                MiniBatchSize=miniBatchSize,...
-                MiniBatchFcn=@preprocessMiniBatch,...
-                MiniBatchFormat=["SSCB" ""]);
+
+miniBatchSize = 120;
+numEpochs = 10;
+learnRate = 0.01;
+numIterationsPerEpoch = 10;
+
+digitDatasetPath = fullfile(matlabroot,'toolbox','nnet','nndemos', ...
+    'nndatasets','DigitDataset');
+fullDataset = imageDatastore(digitDatasetPath, ...
+    'IncludeSubfolders',true,'LabelSource','foldernames');
+
+% train/val split
+[imdsTrain, imdsVal] = splitEachLabel(fullDataset, 0.8, 'randomize');
+
+
+% take slices from imdsTrain and store in array
+
+
+
+
+
+data = imdsTrain;
+miniBatches = createMiniBatchstruct(data, miniBatchSize)
+
+
 
 for epoch = 1:numEpochs
     
    % updae learnable parameters based on mini-batch of data
     for i = 1:numIterationsPerEpoch
+        
         % Read mini-batch of data and convert the labels to dummy variables.
         
-        [X,T] = next(mbq);
+        [X,Y] = next(mbq);
 
         
 
 
         % Convert mini-batch of data to a dlarray.
+        X = dlarray(X');
+        T = dlarray(T);
+        
         
         
         % Evaluate the model gradients and loss using dlfeval and the
@@ -93,15 +126,3 @@ end
 
 %% test neural network & visualization 
 
-%% Define Model Gradients Function
-% 
-function [gradients,loss,dlYPred] = modelGradients(dlnet,dlX,Y)
-
-    % forward propagation 
-    dlYPred = forward(dlnet,dlX);
-    % calculate loss -- varies based on different requirement
-    loss = crossentropy(dlYPred,Y);
-    % calculate gradients 
-    gradients = dlgradient(loss,dlnet.Learnables);
-    
-end
